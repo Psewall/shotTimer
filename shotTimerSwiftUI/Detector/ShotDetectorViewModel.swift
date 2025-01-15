@@ -22,6 +22,7 @@ class ShotDetectorViewModel: ObservableObject {
     @Published var readyButtonIsEnabled: Bool = true
     private var thresholdLevel: Float = Float(Settings.shared.detectionLevel)
     private var randomTimeFrom: Double = Double(Settings.shared.timeRange)
+    private var endTime: Double = Double(Settings.shared.endTime)
     private var soundName: String = Settings.shared.soundName
     private var startTime: Date?
     private var shotDetected = false
@@ -41,7 +42,7 @@ class ShotDetectorViewModel: ObservableObject {
     func startShotRecognition() {
         randomTimeFrom = Double(Settings.shared.timeRange) // Combine or this?
         print("starShotRecognition")
-        readyButton = "Be prepared"
+        readyButton = "Be prepared - go on Beep"
         readyButtonIsEnabled = false
         DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: randomTimeFrom...5)) {
             self.state = .stop
@@ -67,7 +68,7 @@ class ShotDetectorViewModel: ObservableObject {
             .sink { _ in
                 self.audioManager.audioRecorder.updateMeters()
                 let level = self.audioManager.audioRecorder.averagePower(forChannel: 0)
-                print("Recording level: \(level)")
+                print("Recording level: \(level) self.thresholdLevel \(self.thresholdLevel)  ")
                 //check for condition
                 if level > self.thresholdLevel && level > previousLevel {
                     print("level detected")
@@ -80,6 +81,16 @@ class ShotDetectorViewModel: ObservableObject {
                     self.shotDetected = false
                 }
                 previousLevel = level // Store the current level for the next comparison
+                let timeElapsed = Double(Date().timeIntervalSince(self.startTime!))
+                print("timeElapsed: \(timeElapsed)  ")
+                if timeElapsed >  Double(Settings.shared.endTime) {
+                    print("time out")
+                    self.state = .resetOrSave
+                    self.stopRecording()
+                    self.soundName = Settings.shared.soundName // Combine or this?
+                    self.playSound(soundName: self.soundName)
+                   
+                }
             }
     }
     

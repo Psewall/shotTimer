@@ -22,6 +22,11 @@ class Settings: ObservableObject {
             objectWillChange.send()
         }
     }
+    @AppStorage("shootTime") var endTime = 0 {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     
     @AppStorage("soundName") var soundName = "beep-01" {
         didSet {

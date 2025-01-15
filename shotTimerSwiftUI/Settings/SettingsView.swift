@@ -94,6 +94,15 @@ struct SettingsView: View {
                             .frame(width: 80)
                             .submitLabel(.done)
                     }
+                    HStack {
+                        Text("Time in seconds for shooting string")
+                        Spacer()
+                        TextField("Minimum", value: settings.$endTime, formatter: NumberFormatter())
+                            .multilineTextAlignment(.trailing)
+                            .keyboardType(.decimalPad)
+                            .frame(width: 80)
+                            .submitLabel(.done)
+                    }
                     
                     HStack {
                         Text("Sound Name")
